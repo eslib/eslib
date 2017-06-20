@@ -1,0 +1,47 @@
+{
+  "name": "eslib",
+  "version": "1.0.0",
+  "description": "Safe, extended standard library for TypeScript and JavaScript",
+  "main": "dist/src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint .",
+    "prepublish": "npm run lint && npm run build && npm run test",
+    "pretest": "npm run build",
+    "tdd": "concurrently -k 'npm run watch' 'ava -w'",
+    "test": "ava",
+    "watch": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bcherny/eslib.git"
+  },
+  "author": "Boris Cherny <boris@performancejs.com> (https://performancejs.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bcherny/eslib/issues"
+  },
+  "homepage": "https://github.com/bcherny/eslib#readme",
+  "devDependencies": {
+    "@types/lodash": "^4.14.66",
+    "@types/node": "^8.0.0",
+    "ava": "^0.19.1",
+    "concurrently": "^3.4.0",
+    "tslint": "^5.4.3",
+    "typescript": "^2.3.4"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "ava": {
+    "files": [
+      "dist/test/*.js"
+    ],
+    "source": [
+      "dist/src/*.js"
+    ]
+  }
+}
