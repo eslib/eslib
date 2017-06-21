@@ -1,6 +1,6 @@
 {
   "name": "eslib",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Safe, extended standard library for TypeScript and JavaScript",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
@@ -11,7 +11,7 @@
     "build": "npm run clean && tsc -d",
     "clean": "rm -rf dist",
     "lint": "tslint .",
-    "prepublish": "npm run lint && npm run build && npm run test",
+    "prepublish": "npm run lint && npm test",
     "pretest": "npm run build",
     "tdd": "concurrently -k 'npm run watch' 'ava -w'",
     "test": "ava",
