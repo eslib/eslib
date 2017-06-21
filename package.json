@@ -3,11 +3,13 @@
   "version": "0.0.1",
   "description": "Safe, extended standard library for TypeScript and JavaScript",
   "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && tsc -d",
+    "clean": "rm -rf dist",
     "lint": "tslint .",
     "prepublish": "npm run lint && npm run build && npm run test",
     "pretest": "npm run build",
@@ -28,13 +30,14 @@
   "devDependencies": {
     "@types/lodash": "^4.14.66",
     "@types/node": "^8.0.0",
+    "@types/semver": "^5.3.31",
     "ava": "^0.19.1",
     "concurrently": "^3.4.0",
     "tslint": "^5.4.3",
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "semver": "^5.3.0"
   },
   "ava": {
     "files": [

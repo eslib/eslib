@@ -37,6 +37,10 @@ ESLib takes advantage of this to give JavaScript the standard library it deserve
 npm test
 ```
 
+## TODO
+
+- Decide how to treat native methods (eg. `filter`) - overwrite them with the lodash versions? Leave them alone?
+
 ## License
 
 MIT

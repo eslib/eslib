@@ -1,50 +1,79 @@
-import * as _ from 'lodash'
-
-const SOURCE = 'eslib'
-const VERSION = '1.0.0'
-
-const extensions: Record<string, string[]> = {
-  Array: ['chunk', 'compact', 'difference', 'differenceBy', 'differenceWith', 'drop', 'dropRight', 'dropRightWhile', 'dropWhile', 'fill', 'findIndex', 'findLastIndex', 'flatten', 'flattenDeep', 'flattenDepth', 'fromPairs', 'head', 'initial', 'intersection', 'intersectionBy', 'intersectionWith', 'last', 'nth', 'pull', 'pullAll', 'pullAllBy', 'pullAllWith', 'pullAt', 'remove', 'sortedIndex', 'sortedIndexBy', 'sortedIndexOf', 'sortedLastIndex', 'sortedLastIndexBy', 'sortedLastIndexOf', 'sortedUniq', 'sortedUniqBy', 'tail', 'take', 'takeRight', 'takeRightWhile', 'takeWhile', 'union', 'unionBy', 'unionWith', 'uniq', 'uniqBy', 'uniqWith', 'unzip', 'unzipWith', 'without', 'xor', 'xorBy', 'xorWith', 'zip', 'zipObject', 'zipObjectDeep', 'zipWith']
-}
+import { valid, satisfies, gte } from 'semver'
 
 const host = global || window
 
-type Fn = {
-  (...args: any[]): any
-  source?: string
-  version?: string
-}
+export function assign(
+  name: string,
+  fn: Function,
+  type: Type,
+  source: string,
+  version: string
+) {
 
-for (const A in extensions) {
-  for (const method of extensions[A]) {
+  const prototype: Record<string, Extension> = (host as any)[type].prototype
+  const _fn: Extension = function(this: any, ...args: any[]) {
+    return _fn.originalFunction.apply(this, args)
+  } as Extension
+  _fn.originalFunction = fn
+  _fn.source = source
+  _fn.version = version
 
-    const prototype: any = (host as any)[A].prototype
-    const fn: Fn = function(this: any, ...args: any[]) {
-      return (_ as any)[method](this, ...args)
-    }
-    fn.source = SOURCE
-    fn.version = VERSION
-
-    if (method in prototype && !isCompatible(prototype[method], fn)) {
-      console.warn(`ESLib warning: skipping method "${method}" because an incompatible version is already defined on ${A}.prototype.`)
-      continue
-    }
-
-    Object.defineProperty(prototype, method, {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: fn
-    })
+  // validate version
+  if (!valid(version)) {
+    console.warn(`version string "${version}" for method "${name}" on type "${type}" is invalid. Please specify version as X.Y.Z (eg. "1.2.3").`)
+    return
   }
+
+  if (name in prototype) {
+
+    const existing = prototype[name]
+
+    // if method is already natively defined, skip it
+    if (isNative(existing)) {
+      console.warn(`ESLib warning: skipping method "${name}" because it is already natively installed on type "${type}".`)
+      return
+    }
+
+    // if property is defined by something else, skip it
+    if (!('source' in existing) || !('version' in existing) || !('originalFunction' in existing)) {
+      console.warn(`ESLib warning: skipping method "${name}" because it is already defined on type "${type}" by some library outside of ESlib.`)
+    }
+
+    // if method is defined by another eslib, skip it
+    if (existing.source !== _fn.source) {
+      console.warn(`ESLib warning: skipping method "${name}" (provided by "${_fn.source}") on type "${type}" because another method with the same name was already installed by "${existing.source}."`)
+      return
+    }
+
+    // if method is defined by the same eslib at an incompatible version, skip it
+    if (!isCompatible(existing, _fn)) {
+      console.warn(`ESLib warning: skipping method "${name}" at version ${_fn.version} (provided by "${_fn.source}") because a${gte(existing.version, _fn.version) ? ' newer' : 'n older'} version ${existing.version} is already installed on type "${type}".`)
+      return
+    }
+  }
+
+  Object.defineProperty(prototype, name, {
+    configurable: false,
+    enumerable: false,
+    writable: true, // allow overwriting in subsequent calls
+    value: _fn
+  })
 }
 
-/** TODO: Support semver */
-function isCompatible(a: Fn, b: Fn) {
-  return a.source !== undefined
-      && b.source !== undefined
-      && a.version !== undefined
-      && b.version !== undefined
-      && a.source === b.source
-      && a.version === b.version
+export type Extension<T = any> = {
+  (...args: any[]): T
+  originalFunction: Function
+  source: string
+  version: string
+}
+
+export type Type = 'Array' | 'Date' | 'Function' | 'Map' | 'Number' | 'Object' | 'Set' | 'String' | 'Symbol' | 'WeakMap' | 'WeakSet' | 'TypedArray'
+
+function isCompatible(a: Extension, b: Extension) {
+  return a.source === b.source
+    && satisfies(b.version, '^' + a.version)
+}
+
+function isNative(fn: Function) {
+  return fn.toString().indexOf('[native code]') > -1
 }
