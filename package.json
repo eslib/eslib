@@ -1,6 +1,6 @@
 {
   "name": "eslib",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Safe, extended standard library for TypeScript and JavaScript",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
