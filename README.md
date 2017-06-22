@@ -89,12 +89,44 @@ What's interesting is that these problems are mostly unique to dynamically typed
 
 ESLib takes advantage of this to give JavaScript the standard library it deserves, guilt-free.
 
-**If you're a pragmatist.**
-
-## Why you should not use TSlib
+## Why you should not use ESlib
 
 - **If you're a functional programming purist**, this style of programming is Object Oriented, and is probably not for you
 - **If you're writing performance critical code**, prototype extensions slow down scope lookups. Luckily, the sort of slowdown we're talking about won't be noticeable in 99.99% of applications (see [benchmarks](TODO) for more info)
+
+## Usage (Consuming it)
+
+To consume a ESlib extension package, all you need to do is import it. For example, for the [Lodash](TODO) package, just add the following line to your entry file:
+
+```js
+import '@eslib/lodash'
+```
+
+## Usage (Authoring extensions)
+
+ESlib provides a simple API for registering extensions. For example, I can use it to provide a `size` method for objects:
+
+```js
+import { assign } from 'eslib'
+
+// define a size function
+function size() {
+  return Object.keys(this).length
+}
+
+// register it
+assign(Object, { size }, '@bcherny', '1.0.0')
+
+// use it
+{ a: 1 }.size() // 1
+```
+
+Let's break down the 4 parameters I passed to `assign`:
+
+- `Object` - The class whose prototype I want to extend
+- `{ size }` - The method `"size"` should map to the function `size` we defined above
+- `'@bcherny'` - The method's author (it can be any string), used by ESlib to check methods for compatability
+- `'1.0.0'` - The method's version (a [semver](TODO) string), used by ESlib to check methods for compatability
 
 ## Tests
 
