@@ -20,7 +20,7 @@ import 'eslib'
   .map(arr => arr.head()) // [1, 3]
 ```
 
-## Rationale (aka. "This is blasphemy!")
+## Why you should use ESlib (aka. "This is blasphemy!")
 
 If you've ever written production JavaScript before, you've at some point needed to install a utility library to do what JavaScript can't do out of the box. Or worse, you've rolled your own utility functions. Because of JS's limited standard library, for most projects you need tools like Lodash, Underscore, Ramda, or JQuery to provide those missing utility functions.
 
@@ -79,11 +79,11 @@ let array = data
   .mapValues(i => i * 2)
 ```
 
-But wait, isn't extending the prototype in JavaScript unsafe? Yes and no. Extending the `prototype` is usually bad for a couple of reasons:
+Wait, wait - isn't extending the prototype in JavaScript unsafe? Well, yes. Extending the `prototype` is bad for a few reasons:
 
 1. Libraries might extend the `prototype` in unexpected ways
 2. Those extensions might conflict with one another
-3. If two libraries add the same method to a `prototype`, those methods aren't necessarily compatible
+3. If two libraries add a method with the same name to a `prototype`, they might be incompatible
 
 What's interesting is that these problems are mostly unique to dynamically typed languages. What's also interesting is that best practices depend on your language of choice: JavaScript people don't like prototype extensions, but Ruby people love them. If you haven't worked with statically typed languages before, you might be surprised to learn that static type systems can make prototype extensions *safe* - you'll know exactly how the prototype has been extended (you'll even get autocomplete for it), and you'll know at compile time (ie. when you write your code, *before* you run it) if there are any conflicting extensions.
 
@@ -96,11 +96,19 @@ ESLib takes advantage of this to give JavaScript the standard library it deserve
 
 ## Usage (Consuming it)
 
-To consume a ESlib extension package, all you need to do is import it. For example, for the [Lodash](TODO) package, just add the following line to your entry file:
+To consume a ESlib extension package, all you need to do is import it. For example, for the [Lodash](https://github.com/eslib/lodash) package, all you need to do is:
 
-```js
-import '@eslib/lodash'
-```
+1. Install it:
+
+  ```sh
+  npm install @eslib/lodash -S
+  ```
+
+2. Add the following line to your index (entry) file:
+
+  ```js
+  import '@eslib/lodash'
+  ```
 
 ## Usage (Authoring extensions)
 
@@ -115,7 +123,7 @@ function size() {
 }
 
 // register it
-assign(Object, { size }, '@bcherny', '1.0.0')
+assign(Object.prototype, { size }, '@bcherny', '1.0.0')
 
 // use it
 { a: 1 }.size() // 1
@@ -126,7 +134,19 @@ Let's break down the 4 parameters I passed to `assign`:
 - `Object` - The class whose prototype I want to extend
 - `{ size }` - The method `"size"` should map to the function `size` we defined above
 - `'@bcherny'` - The method's author (it can be any string), used by ESlib to check methods for compatability
-- `'1.0.0'` - The method's version (a [semver](TODO) string), used by ESlib to check methods for compatability
+- `'1.0.0'` - The method's version (a [semver](http://semver.org/) string), used by ESlib to check methods for compatability
+
+## How it works
+
+Extending bultin types is straight-forward (just add a method/object on it or its prototype), so all we need to do is ensure that the extension is done safely (ie. it doesn't conflict with other extensions, or override native functionality in a backwards-incompatible way). There are a few approaches I could have taken to enforce API compatibility:
+
+1. A static type system (TypeScript, Flow, or Closure annotations)
+2. Semver, like what NPM does at the package level
+3. Running unit tests from one extension against another extension's implementation (this relies on unit tests testing for the specific edge cases where the implementations differ, which is too optimistic)
+4. Generating tests based on an extension's API and running those against another extension's implementation (too slow to do at runtime, and would introduce a mandatory build step)
+5. Block level import scoping (too verbose to use in JavaScript)
+
+Scala for example uses 1 and 5. I settled on 1 and 2. If you have an opinion on this, please file an issue!
 
 ## Tests
 
