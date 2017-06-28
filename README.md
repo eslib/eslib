@@ -94,17 +94,23 @@ ESLib takes advantage of this to give JavaScript the standard library it deserve
 - **If you're a functional programming purist**, this style of programming is Object Oriented, and is probably not for you
 - **If you're writing performance critical code**, prototype extensions slow down scope lookups. Luckily, the sort of slowdown we're talking about won't be noticeable in 99.99% of applications (see [benchmarks](TODO) for more info)
 
-## Usage (Consuming it)
+## Install ESlib
 
-To consume a ESlib extension package, all you need to do is import it. For example, for the [Lodash](https://github.com/eslib/lodash) package, all you need to do is:
+```sh
+npm install eslib
+```
 
-1. Install it:
+## Then install and import ESlib extensions
+
+Install the desired ESlib extension package. For example, for the [Lodash](https://github.com/eslib/lodash) package, all you need to do is:
+
+1. Install the extension:
 
   ```sh
   npm install @eslib/lodash -S
   ```
 
-2. Add the following line to your index (entry) file:
+2. Import the extension with the following line to your index (entry) file:
 
   ```js
   import '@eslib/lodash'
@@ -138,7 +144,7 @@ Let's break down the 4 parameters I passed to `assign`:
 
 ## How it works
 
-Extending bultin types is straight-forward (just add a method/object on it or its prototype), so all we need to do is ensure that the extension is done safely (ie. it doesn't conflict with other extensions, or override native functionality in a backwards-incompatible way). There are a few approaches I could have taken to enforce API compatibility:
+Extending built-in types is straight-forward (just add a method/object on it or its prototype), so all we need to do is ensure that the extension is done safely (i.e. it doesn't conflict with other extensions, or override native functionality in a backwards-incompatible way). There are a few approaches I could have taken to enforce API compatibility:
 
 1. A static type system (TypeScript, Flow, or Closure annotations)
 2. Semver, like what NPM does at the package level
