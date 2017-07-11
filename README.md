@@ -1,8 +1,8 @@
 <img src="logo.png" alt="ESlib" width="254px" />
 
-[![Build Status][build]](https://circleci.com/gh/bcherny/eslib) [![npm]](https://www.npmjs.com/package/eslib) [![mit]](https://opensource.org/licenses/MIT)
+[![Build Status][build]](https://circleci.com/gh/eslib/eslib) [![npm]](https://www.npmjs.com/package/eslib) [![mit]](https://opensource.org/licenses/MIT)
 
-[build]: https://img.shields.io/circleci/project/bcherny/eslib.svg?branch=master&style=flat-square
+[build]: https://img.shields.io/circleci/project/eslib/eslib.svg?branch=master&style=flat-square
 [npm]: https://img.shields.io/npm/v/eslib.svg?style=flat-square
 [mit]: https://img.shields.io/npm/l/eslib.svg?style=flat-square
 
