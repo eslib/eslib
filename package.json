@@ -1,7 +1,7 @@
 {
   "name": "eslib",
-  "version": "0.0.5",
-  "description": "Safe, extended standard library for TypeScript and JavaScript",
+  "version": "0.1.0",
+  "description": "Safe, extensible prototypes for TypeScript and JavaScript",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "directories": {
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/eslib/eslib#readme",
   "devDependencies": {
+    "@types/cli-color": "^0.3.29",
     "@types/lodash": "^4.14.66",
     "@types/node": "^8.0.0",
     "@types/semver": "^5.3.31",

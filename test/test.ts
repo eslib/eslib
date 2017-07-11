@@ -65,3 +65,8 @@ test('it accepts when it is newer than and compatible with an already installed 
   assign(Array.prototype, { e: b }, 'foo', '1.0.1')
   t.is(Array.prototype.e, b)
 })
+
+test('it rejects when it is a reserved word', t => {
+  assign(Object.prototype as any, { get: () => {} }, 'foo', '1.0.1')
+  t.is((Array.prototype as any).get, undefined)
+})
