@@ -1,6 +1,6 @@
 {
   "name": "eslib",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Safe, extensible prototypes for TypeScript and JavaScript",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",

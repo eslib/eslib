@@ -6,7 +6,7 @@
 [npm]: https://img.shields.io/npm/v/eslib.svg?style=flat-square
 [mit]: https://img.shields.io/npm/l/eslib.svg?style=flat-square
 
-> Safe, extended standard library for TypeScript and JavaScript
+> Safe, extensible prototypes for TypeScript and JavaScript
 
 **Work in progress.**
 
@@ -17,7 +17,7 @@ import 'eslib'
 
 [1, 2, 3, 4]
   .chunk(2)
-  .map(arr => arr.head()) // [1, 3]
+  .head() // [1, 2]
 ```
 
 ## Why you should use ESlib (aka. "This is blasphemy!")
@@ -89,6 +89,8 @@ What's interesting is that these problems are mostly unique to dynamically typed
 
 ESLib takes advantage of this to give JavaScript the standard library it deserves, guilt-free.
 
+Because JavaScript doesn't support scoped prototype extensions, and because ESlib globally scopes extensions, ESlib adds an extra safety precaution: every extension must be given a version and an author. Version strings follow semver, and author strings should correspond to the repo (for example, `'eslib/lodash'`). ESlib checks that libs competing for the same method name are provided by the same author, and have compatible versions.
+
 ## Why you should not use ESlib
 
 - **If you're a functional programming purist**, this style of programming is Object Oriented, and is probably not for you
@@ -98,19 +100,19 @@ ESLib takes advantage of this to give JavaScript the standard library it deserve
 
 To consume a ESlib extension package, all you need to do is import it. For example, for the [Lodash](https://github.com/eslib/lodash) package, all you need to do is:
 
-1. Install it:
+1. Install the extension:
 
   ```sh
   npm install @eslib/lodash -S
   ```
 
-2. Add the following line to your index (entry) file:
+2. Import the extension with the following line to your index (entry) file:
 
   ```js
   import '@eslib/lodash'
   ```
 
-## Usage (Authoring extensions)
+## Usage (Authoring Extensions)
 
 ESlib provides a simple API for registering extensions. For example, I can use it to provide a `size` method for objects:
 
@@ -123,7 +125,7 @@ function size() {
 }
 
 // register it
-assign(Object.prototype, { size }, '@bcherny', '1.0.0')
+assign(Object.prototype, { size }, 'bcherny/size', '1.0.0')
 
 // use it
 { a: 1 }.size() // 1
@@ -131,22 +133,32 @@ assign(Object.prototype, { size }, '@bcherny', '1.0.0')
 
 Let's break down the 4 parameters I passed to `assign`:
 
-- `Object` - The class whose prototype I want to extend
+- `Object.prototype` - The object I want to assign my method to
 - `{ size }` - The method `"size"` should map to the function `size` we defined above
-- `'@bcherny'` - The method's author (it can be any string), used by ESlib to check methods for compatability
+- `'bcherny/size'` - The method's author (it can be any string), used by ESlib to check methods for compatability
 - `'1.0.0'` - The method's version (a [semver](http://semver.org/) string), used by ESlib to check methods for compatability
+
+If you're using TypeScript, you should augment the typings for the object you're extending too:
+
+```ts
+declare global {
+  interface Object {
+    size(): number
+  }
+}
+```
 
 ## How it works
 
-Extending bultin types is straight-forward (just add a method/object on it or its prototype), so all we need to do is ensure that the extension is done safely (ie. it doesn't conflict with other extensions, or override native functionality in a backwards-incompatible way). There are a few approaches I could have taken to enforce API compatibility:
+Extending built-in types is straight-forward (just add a method/object on it or its prototype), so all ESlib needs to do is ensure the extension is made safely (ie. it doesn't conflict with other extensions, override native functionality in a backwards-incompatible way, or use a reserved word). There are a few approaches ESlib could have taken to enforce API compatibility:
 
 1. A static type system (TypeScript, Flow, or Closure annotations)
 2. Semver, like what NPM does at the package level
 3. Running unit tests from one extension against another extension's implementation (this relies on unit tests testing for the specific edge cases where the implementations differ, which is too optimistic)
 4. Generating tests based on an extension's API and running those against another extension's implementation (too slow to do at runtime, and would introduce a mandatory build step)
-5. Block level import scoping (too verbose to use in JavaScript)
+5. Block level import scoping (too verbose to use in JavaScript, see [esdiscuss discussion](https://esdiscuss.org/topic/block-scoped-prototype-extensions))
 
-Scala for example uses 1 and 5. I settled on 1 and 2. If you have an opinion on this, please file an issue!
+Scala for example uses 1 and 5. ESlib uses 1 and 2. If you have an opinion on this, please file an issue!
 
 ## Tests
 
