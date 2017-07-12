@@ -5,13 +5,22 @@ import { isNative, isCompatible } from './utils'
 export let authors = model()
 export let versions = model()
 
+/** @private */
+export let __errors: AssignError[] = []
+
 const reserved = model()
 reserved.set(Object.prototype as any)('get')('@eslib')
 reserved.set(Object.prototype as any)('set')('@eslib')
 
 export type AssignError = {
   error: ASSIGN_ERROR
-  meta: object
+  meta: {
+    author: string
+    method: string
+    type: object
+    version: string
+    [k: string]: any
+  }
 }
 
 export enum ASSIGN_ERROR {
@@ -40,7 +49,7 @@ export function assign<T extends object, K extends keyof T>(
     if (!valid(version)) {
       errors.push({
         error: ASSIGN_ERROR.INVALID_VERSION,
-        meta: { method, type, version }
+        meta: { author, method, type, version }
       })
       continue
     }
@@ -107,20 +116,7 @@ export function assign<T extends object, K extends keyof T>(
 
   }
 
+  __errors = [...__errors, ...errors]
+
   return errors
 }
-
-let prettyTypes = new Map<object, string>()
-prettyTypes.set(Array, 'Array')
-prettyTypes.set(Boolean, 'Boolean')
-prettyTypes.set(Function, 'Function')
-prettyTypes.set(Math, 'Math')
-prettyTypes.set(Number, 'Number')
-prettyTypes.set(String, 'String')
-prettyTypes.set(Object, 'Object')
-prettyTypes.set(Array.prototype, 'Array.prototype')
-prettyTypes.set(Boolean.prototype, 'Boolean.prototype')
-prettyTypes.set(Function.prototype, 'Function.prototype')
-prettyTypes.set(Number.prototype, 'Number.prototype')
-prettyTypes.set(Object.prototype, 'Object.prototype')
-prettyTypes.set(String.prototype, 'String.prototype')
