@@ -1,6 +1,6 @@
 {
   "name": "eslib",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Safe, extensible prototypes for TypeScript and JavaScript",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/eslib/eslib#readme",
   "devDependencies": {
-    "@types/cli-color": "^0.3.29",
     "@types/lodash": "^4.14.66",
     "@types/node": "^8.0.0",
     "@types/semver": "^5.3.31",
@@ -38,7 +37,6 @@
     "typescript": "^2.3.4"
   },
   "dependencies": {
-    "cli-color": "^1.2.0",
     "semver": "^5.3.0"
   },
   "ava": {
