@@ -34,7 +34,7 @@ export enum ASSIGN_ERROR {
 
 export function assign<T extends object, K extends keyof T>(
   type: T,
-  fns: Record<K, T[K]>,
+  fns: Partial<Record<K, T[K]>>,
   author: string,
   version: string
 ): AssignError[] {
